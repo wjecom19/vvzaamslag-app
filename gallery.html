@@ -4,13 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VV Zaamslag – Fotogalerij</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+  <!-- =====================================================
+       SLIDESHOW OVERLAY  (actief via ?slideshow in de URL)
+       ===================================================== -->
+  <div id="slideshow-overlay" hidden>
+    <img class="ss-slide" id="slide-a" alt="" />
+    <img class="ss-slide" id="slide-b" alt="" />
+    <img class="ss-logo" src="Logo vv zaamslag.png" alt="VV Zaamslag" />
+    <div class="ss-progressbar" id="ss-progressbar"></div>
+    <div class="ss-teller" id="ss-teller"></div>
+
+    <!-- Laadscherm binnen overlay -->
+    <div class="ss-laadscherm" id="ss-laadscherm">
+      <img src="Logo vv zaamslag.png" alt="VV Zaamslag" />
+      <div class="spinner"></div>
+      <p>Foto's laden…</p>
+    </div>
+
+    <!-- Leeg scherm -->
+    <div class="ss-leeg" id="ss-leeg" hidden>
+      <span>📭</span>
+      <p>Nog geen goedgekeurde foto's</p>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       NORMALE GALERIJ
+       ===================================================== -->
   <header>
     <div class="header-inner">
-      <div class="club-badge"><img src="Logo vv zaamslag.png" alt="VV Zaamslag" /></div>
+      <div class="club-badge">
+        <img src="Logo vv zaamslag.png" alt="VV Zaamslag" />
+      </div>
       <div>
         <h1>VV Zaamslag</h1>
         <p class="subtitle">Fotogalerij</p>
@@ -18,25 +50,7 @@
     </div>
   </header>
 
-  <!-- Wachtwoord-gate (zelfde patroon als admin.html) -->
-  <div id="login-screen" class="login-screen">
-    <div class="login-card">
-      <div class="login-icon">🔒</div>
-      <h2 class="login-title">Beheerderstoegang</h2>
-      <p class="login-sub">Voer het wachtwoord in om de galerij te bekijken</p>
-      <input
-        type="password"
-        id="password-input"
-        class="login-input"
-        placeholder="Wachtwoord"
-        autocomplete="current-password"
-      />
-      <p id="login-error" class="login-error" hidden>Onjuist wachtwoord — probeer opnieuw.</p>
-      <button class="btn-primary" id="login-btn">Inloggen</button>
-    </div>
-  </div>
-
-  <main id="gallery-main" hidden>
+  <main id="gallery-main">
 
     <div class="admin-toolbar">
       <div class="filter-bar">
@@ -44,34 +58,33 @@
         <button class="filter-btn" data-filter="Eerste Elftal">Eerste Elftal</button>
         <button class="filter-btn" data-filter="Jeugd">Jeugd</button>
       </div>
+      <button class="btn-refresh" id="refresh-btn" title="Vernieuwen">↻</button>
     </div>
 
     <p id="result-count" class="result-count"></p>
 
-    <!-- Laden -->
     <div id="loading-state" class="feedback-state">
       <div class="spinner"></div>
       <p>Foto's laden…</p>
     </div>
 
-    <!-- Leeg -->
     <div id="empty-state" class="feedback-state" hidden>
       <div class="feedback-icon">📷</div>
       <p>Nog geen goedgekeurde foto's.</p>
     </div>
 
-    <!-- Fout -->
     <div id="error-state" class="feedback-state" hidden>
       <div class="feedback-icon">⚠</div>
       <p id="error-text">Er is een fout opgetreden.</p>
       <button class="btn-primary" id="retry-btn" style="margin-top:1rem">Opnieuw proberen</button>
     </div>
 
-    <!-- Foto-grid -->
     <div id="gallery-grid" class="gallery-grid" hidden></div>
 
+    <!-- CTA: stuur foto in + start diavoorstelling -->
     <div id="gallery-cta" class="gallery-cta" hidden>
-      <a href="admin.html" class="btn-primary">← Terug naar admin</a>
+      <a href="index.html" class="btn-primary">📷 Stuur jouw foto in</a>
+      <a href="gallery.html?slideshow" class="btn-slideshow" title="Open als diavoorstelling">📺 Diavoorstelling</a>
     </div>
 
   </main>

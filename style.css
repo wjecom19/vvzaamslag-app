@@ -727,29 +727,134 @@ main {
   background: var(--white);
 }
 
-/* CTA-knop onderaan galerij */
+/* CTA onderaan galerij */
 .gallery-cta {
   max-width: 900px;
   margin: 1.5rem auto 2.5rem;
   padding: 0 1rem;
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: center;
 }
 
 .gallery-cta a {
-  display: inline-block;
-  padding: 0.85rem 2rem;
-  background: var(--green);
-  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.85rem 1.5rem;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 3px 10px rgba(168, 202, 53, 0.4);
   transition: background 0.15s, transform 0.1s;
 }
 
-.gallery-cta a:hover  { background: var(--green-dark); }
-.gallery-cta a:active { transform: scale(0.97); }
+.gallery-cta a:active { transform: scale(0.96); }
+
+.gallery-cta .btn-primary {
+  background: var(--green);
+  color: var(--white);
+  box-shadow: 0 3px 10px rgba(162, 198, 38, 0.4);
+  flex: 1;
+  justify-content: center;
+  min-height: 50px;
+}
+
+.gallery-cta .btn-primary:hover { background: var(--green-dark); }
+
+.btn-slideshow {
+  background: var(--section-bg);
+  color: var(--text);
+  border: 2px solid #e5e5e5;
+  flex: 1;
+  justify-content: center;
+  min-height: 50px;
+}
+
+.btn-slideshow:hover { border-color: var(--green); color: var(--green-dark); }
+
+/* =========================================================
+   Slideshow overlay
+   ========================================================= */
+#slideshow-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+}
+
+.ss-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+
+.ss-slide.actief { opacity: 1; }
+
+.ss-logo {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  height: 56px;
+  opacity: 0.85;
+  z-index: 110;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+}
+
+.ss-progressbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: var(--green);
+  width: 0%;
+  z-index: 110;
+}
+
+.ss-teller {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  z-index: 110;
+}
+
+.ss-laadscherm {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  background: #000;
+  z-index: 115;
+}
+
+.ss-laadscherm img { height: 64px; opacity: 0.9; }
+.ss-laadscherm p   { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+
+.ss-leeg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  font-size: 1rem;
+}
+
+.ss-leeg span { font-size: 3rem; }
 
 @media (min-width: 640px) {
   .gallery-grid { padding: 0 1.5rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }

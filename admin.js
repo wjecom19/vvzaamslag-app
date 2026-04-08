@@ -35,6 +35,7 @@ const submissionsGrid = document.getElementById('submissions-grid');
 const resultCount     = document.getElementById('result-count');
 const refreshBtn      = document.getElementById('refresh-btn');
 const retryBtn        = document.getElementById('retry-btn');
+const downloadZipBtn  = document.getElementById('download-zip-btn');
 const filterBtns      = document.querySelectorAll('.filter-btn');
 
 // =========================================================
@@ -85,6 +86,7 @@ filterBtns.forEach(btn => {
 
 refreshBtn.addEventListener('click', laadInzendingen);
 retryBtn.addEventListener('click', laadInzendingen);
+downloadZipBtn.addEventListener('click', downloadAllesFotos);
 
 // =========================================================
 // Data ophalen
@@ -207,6 +209,57 @@ async function pasStatusAan(id, nieuweStatus) {
       actions.innerHTML = `<span class="update-error">Fout: ${err.message}</span>`;
     }
   }
+}
+
+// =========================================================
+// Bulk download als ZIP
+// =========================================================
+async function downloadAllesFotos() {
+  const goedgekeurd = allSubmissions.filter(s => s.status === 'goedgekeurd');
+
+  if (goedgekeurd.length === 0) {
+    alert('Er zijn nog geen goedgekeurde foto\'s om te downloaden.');
+    return;
+  }
+
+  downloadZipBtn.disabled   = true;
+  downloadZipBtn.title      = 'Bezig…';
+
+  const zip = new JSZip();
+  let geslaagd = 0;
+
+  for (let i = 0; i < goedgekeurd.length; i++) {
+    const foto = goedgekeurd[i];
+    downloadZipBtn.title = `${i + 1} / ${goedgekeurd.length}`;
+
+    try {
+      const response = await fetch(foto.image_url);
+      if (!response.ok) throw new Error('Niet bereikbaar');
+      const blob     = await response.blob();
+      const ext      = blob.type.includes('png') ? 'png' : 'jpg';
+      const naam     = `${foto.template_type.replace(/\s+/g, '-').toLowerCase()}-${i + 1}.${ext}`;
+      zip.file(naam, blob);
+      geslaagd++;
+    } catch (err) {
+      console.warn(`[ZIP] Foto ${i + 1} overgeslagen:`, err.message);
+    }
+  }
+
+  if (geslaagd === 0) {
+    alert('Downloaden mislukt. Controleer je internetverbinding.');
+  } else {
+    const zipBlob  = await zip.generateAsync({ type: 'blob' });
+    const url      = URL.createObjectURL(zipBlob);
+    const datum    = new Date().toISOString().slice(0, 10);
+    const a        = document.createElement('a');
+    a.href         = url;
+    a.download     = `vvzaamslag-fotos-${datum}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  downloadZipBtn.disabled = false;
+  downloadZipBtn.title    = 'Download alle goedgekeurde foto\'s als ZIP';
 }
 
 // =========================================================

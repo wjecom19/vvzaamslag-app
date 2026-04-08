@@ -25,8 +25,7 @@ const photoInput     = document.getElementById('photo-input');
 const canvas         = document.getElementById('canvas');
 const ctx            = canvas.getContext('2d');
 const stepPreview    = document.getElementById('step-preview');
-const captionInput   = document.getElementById('caption-input');
-const captionCounter = document.getElementById('caption-counter');
+
 const verzendBtn     = document.getElementById('verzend-btn');
 const verzendLabel   = document.getElementById('verzend-label');
 const btnSpinner     = document.getElementById('btn-spinner');
@@ -68,130 +67,53 @@ changePhotoBtn.addEventListener('click', () => {
 });
 
 // =========================================================
-// 2. Onderschrift — live hertekenen
-// =========================================================
-captionInput.addEventListener('input', () => {
-  const len = captionInput.value.length;
-  captionCounter.textContent = `${len}/60`;
-  captionCounter.classList.toggle('caption-counter--vol', len >= 50);
-  if (loadedImage) renderCanvas();
-});
-
-// =========================================================
-// 3. Canvas tekenen: foto + gradient + branding + caption
+// 2. Canvas tekenen: foto (1:1 Instagram) + gradient + branding
 // =========================================================
 function renderCanvas() {
-  const img   = loadedImage;
-  const MAX_W = 1080;
+  const img  = loadedImage;
+  const SIZE = 1080;  // Instagram vierkant
 
-  // Logische afmetingen (onafhankelijk van DPR)
-  let w = img.naturalWidth;
-  let h = img.naturalHeight;
-  if (w > MAX_W) {
-    h = Math.round(h * MAX_W / w);
-    w = MAX_W;
-  }
-
-  // Schaal canvas op met device pixel ratio voor scherpe tekst op retineschermen
   const dpr = Math.min(window.devicePixelRatio || 1, 3);
-  canvas.width        = w * dpr;
-  canvas.height       = h * dpr;
+  canvas.width        = SIZE * dpr;
+  canvas.height       = SIZE * dpr;
   canvas.style.width  = '100%';
   canvas.style.height = 'auto';
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);  // teken alles in logische pixels
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  ctx.drawImage(img, 0, 0, w, h);
-  tekenGradient(w, h);
-  tekenTekst(w, h, captionInput.value.trim());
+  // Middenbijsnijden naar vierkant
+  const src = Math.min(img.naturalWidth, img.naturalHeight);
+  const sx  = (img.naturalWidth  - src) / 2;
+  const sy  = (img.naturalHeight - src) / 2;
+  ctx.drawImage(img, sx, sy, src, src, 0, 0, SIZE, SIZE);
+
+  tekenGradient(SIZE);
+  tekenBranding(SIZE);
 }
 
-function tekenGradient(w, h) {
-  const gradH    = Math.round(h * 0.28);
-  const gradient = ctx.createLinearGradient(0, h - gradH, 0, h);
+function tekenGradient(size) {
+  const gradH    = Math.round(size * 0.28);
+  const gradient = ctx.createLinearGradient(0, size - gradH, 0, size);
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0.62)');
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, h - gradH, w, gradH);
+  ctx.fillRect(0, size - gradH, size, gradH);
 }
 
-function tekenTekst(w, h, caption) {
-  const padding   = Math.round(w * 0.04);
-  const onderrand = h - Math.round(h * 0.03);
-  const maxWidth  = w - padding * 2;
+function tekenBranding(size) {
+  const padding   = Math.round(size * 0.04);
+  const onderrand = size - Math.round(size * 0.03);
+  const fontSize  = Math.min(Math.round(size * 0.024), 22);
 
-  // Font-groottes op basis van breedte (niet hoogte) — voorkomt overflow bij portretfotos
-  const brandSize   = Math.min(Math.round(w * 0.024), 22);
-  const captionSize = Math.min(Math.round(w * 0.052), 48);
-
-  // VV Zaamslag branding (altijd aanwezig, linksonder)
   ctx.save();
   ctx.fillStyle    = '#a2c626';
-  ctx.font         = `800 ${brandSize}px Inter, Arial, sans-serif`;
+  ctx.font         = `800 ${fontSize}px Inter, Arial, sans-serif`;
   ctx.textAlign    = 'left';
   ctx.textBaseline = 'bottom';
   ctx.fillText('VV ZAAMSLAG', padding, onderrand);
   ctx.restore();
-
-  if (!caption) return;
-
-  // Caption: gesplitst over maximaal 2 regels, gecentreerd
-  ctx.save();
-  ctx.font           = `700 ${captionSize}px Inter, Arial, sans-serif`;
-  ctx.fillStyle      = '#ffffff';
-  ctx.textAlign      = 'center';
-  ctx.textBaseline   = 'bottom';
-  ctx.shadowColor    = 'rgba(0, 0, 0, 0.7)';
-  ctx.shadowBlur     = 4;
-  ctx.shadowOffsetY  = 1;
-
-  const regels    = woordWrap(ctx, caption, maxWidth);
-  const regelH    = captionSize * 1.3;
-  const basisY    = onderrand - brandSize - Math.round(h * 0.025);
-
-  // Teken regels van onder naar boven
-  regels.reverse().forEach((regel, i) => {
-    ctx.fillText(regel, w / 2, basisY - i * regelH);
-  });
-
-  ctx.restore();
 }
 
-// Splits tekst in maximaal 2 regels op woordgrenzen
-function woordWrap(context, tekst, maxWidth) {
-  const woorden = tekst.split(' ');
-  const regels  = [];
-  let huidig    = '';
-
-  for (const woord of woorden) {
-    const test = huidig ? huidig + ' ' + woord : woord;
-    if (context.measureText(test).width <= maxWidth) {
-      huidig = test;
-    } else {
-      if (huidig) regels.push(huidig);
-      huidig = woord;
-      if (regels.length >= 1) break; // max 2 regels
-    }
-  }
-
-  if (huidig) {
-    // Zorg dat de laatste regel past (anders afkappen)
-    if (context.measureText(huidig).width > maxWidth) {
-      huidig = kapTekstAf(context, huidig, maxWidth);
-    }
-    regels.push(huidig);
-  }
-
-  return regels;
-}
-
-function kapTekstAf(context, tekst, maxWidth) {
-  while (tekst.length > 0) {
-    tekst = tekst.slice(0, -1);
-    if (context.measureText(tekst + '…').width <= maxWidth) return tekst + '…';
-  }
-  return '…';
-}
 
 // =========================================================
 // 4. Verzenden naar Supabase
@@ -237,15 +159,12 @@ async function verzendFoto() {
       .from('inzendingen')
       .insert({
         image_url: publicUrl,
-        caption:   captionInput.value.trim() || null,
         status:    'pending',
       });
 
     if (dbError) throw new Error(`Database-fout: ${dbError.message}`);
 
     toonStatus('success', 'Foto succesvol verzonden naar de admin!');
-    captionInput.value = '';
-    captionCounter.textContent = '0/60';
 
   } catch (err) {
     console.error('[VVZ Upload]', err);
@@ -265,7 +184,6 @@ async function verzendFoto() {
 function setBusy(isBusy) {
   verzendBtn.disabled     = isBusy;
   changePhotoBtn.disabled = isBusy;
-  captionInput.disabled   = isBusy;
   verzendLabel.hidden     = isBusy;
   btnSpinner.hidden       = !isBusy;
 }

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VV Zaamslag – Admin</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="club-badge"><img src="Logo vv zaamslag.png" alt="VV Zaamslag" /></div>
+      <div>
+        <h1>VV Zaamslag</h1>
+        <p class="subtitle">Admin — Inzendingen</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Wachtwoord-gate -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-icon">🔒</div>
+      <h2 class="login-title">Beheerderstoegang</h2>
+      <p class="login-sub">Voer het wachtwoord in om door te gaan</p>
+      <input
+        type="password"
+        id="password-input"
+        class="login-input"
+        placeholder="Wachtwoord"
+        autocomplete="current-password"
+      />
+      <p id="login-error" class="login-error" hidden>Onjuist wachtwoord — probeer opnieuw.</p>
+      <button class="btn-primary" id="login-btn">Inloggen</button>
+    </div>
+  </div>
+
+  <!-- Admin-content (verborgen tot ingelogd) -->
+  <main id="admin-main" hidden>
+
+    <div class="admin-toolbar">
+      <!-- Filter-tabs -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">Alle</button>
+        <button class="filter-btn" data-filter="pending">In behandeling</button>
+        <button class="filter-btn" data-filter="goedgekeurd">Goedgekeurd</button>
+        <button class="filter-btn" data-filter="afgewezen">Afgewezen</button>
+      </div>
+      <button class="btn-refresh" id="refresh-btn" title="Vernieuwen">↻</button>
+      <a href="gallery.html" class="btn-gallery" title="Fotogalerij">🖼</a>
+    </div>
+
+    <!-- Teller -->
+    <p id="result-count" class="result-count"></p>
+
+    <!-- Laden -->
+    <div id="loading-state" class="feedback-state">
+      <div class="spinner"></div>
+      <p>Inzendingen laden…</p>
+    </div>
+
+    <!-- Leeg -->
+    <div id="empty-state" class="feedback-state" hidden>
+      <div class="feedback-icon">📭</div>
+      <p>Geen inzendingen gevonden</p>
+    </div>
+
+    <!-- Fout -->
+    <div id="error-state" class="feedback-state" hidden>
+      <div class="feedback-icon">⚠</div>
+      <p id="error-text">Er is een fout opgetreden.</p>
+      <button class="btn-primary" id="retry-btn" style="margin-top:1rem">Opnieuw proberen</button>
+    </div>
+
+    <!-- Grid met inzendingen -->
+    <div id="submissions-grid" class="submissions-grid"></div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

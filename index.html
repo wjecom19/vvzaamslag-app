@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VV Zaamslag – Foto App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Camera-flits overlay -->
+  <div id="flash-overlay"></div>
+
+  <header>
+    <div class="header-inner">
+      <div class="club-badge"><img src="Logo vv zaamslag.png" alt="VV Zaamslag" /></div>
+      <div>
+        <h1>VV Zaamslag</h1>
+        <p class="subtitle">Foto Template App</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Intro -->
+    <section class="intro-card">
+      <h2 class="intro-title">Deel jouw moment!</h2>
+      <p class="intro-text">Maak een foto, kies een template en stuur hem in. Goedgekeurde foto's verschijnen in de clubgalerij.</p>
+    </section>
+
+    <!-- Stap 1: Template kiezen -->
+    <section class="card" id="step-template">
+      <div class="step-label">Stap 1 — Kies een template</div>
+      <div class="template-buttons">
+        <button class="template-btn" data-template="eerste">
+          <span class="template-icon">⚽</span>
+          <span class="template-name">Eerste Elftal</span>
+          <span class="template-desc">Seniorenteam</span>
+        </button>
+        <button class="template-btn" data-template="jeugd">
+          <span class="template-icon">🌱</span>
+          <span class="template-name">Jeugd</span>
+          <span class="template-desc">Alle jeugdteams</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Stap 2: Foto maken (verborgen tot template is gekozen) -->
+    <section class="card" id="step-upload" hidden>
+      <div class="step-label">Stap 2 — Maak of kies een foto</div>
+      <div class="camera-area">
+        <label class="shutter-btn" for="photo-input">
+          <span class="shutter-icon">📷</span>
+        </label>
+        <p class="camera-hint">Tik om te fotograferen of een foto te kiezen</p>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" />
+    </section>
+
+    <!-- Stap 3: Preview & verzenden -->
+    <section class="card" id="step-preview" hidden>
+      <div class="step-label">Stap 3 — Preview &amp; verzenden</div>
+      <div class="canvas-wrapper">
+        <canvas id="canvas"></canvas>
+      </div>
+
+      <div id="status-msg" class="status-msg" hidden></div>
+
+      <p class="consent-text">Door te verzenden ga je akkoord dat jouw foto getoond kan worden in de kantine en op de sociale media van VV Zaamslag.</p>
+
+      <div class="action-row">
+        <button class="btn-secondary" id="change-photo-btn">Andere foto</button>
+        <button class="btn-primary" id="verzend-btn">
+          <span id="verzend-label">Verzenden</span>
+          <span class="btn-spinner" id="btn-spinner" hidden></span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <a href="admin.html">Beheer</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -11,47 +11,30 @@
 </head>
 <body>
 
-  <!-- Camera-flits overlay -->
   <div id="flash-overlay"></div>
 
   <header>
     <div class="header-inner">
-      <div class="club-badge"><img src="Logo vv zaamslag.png" alt="VV Zaamslag" /></div>
+      <div class="club-badge">
+        <img src="Logo vv zaamslag.png" alt="VV Zaamslag" />
+      </div>
       <div>
         <h1>VV Zaamslag</h1>
-        <p class="subtitle">Foto Template App</p>
+        <p class="subtitle">Foto App</p>
       </div>
     </div>
   </header>
 
   <main>
 
-    <!-- Intro -->
     <section class="intro-card">
       <h2 class="intro-title">Deel jouw moment!</h2>
-      <p class="intro-text">Maak een foto, kies een template en stuur hem in. Goedgekeurde foto's verschijnen in de clubgalerij.</p>
+      <p class="intro-text">Maak een foto en stuur hem in. Goedgekeurde foto's verschijnen in de clubgalerij.</p>
     </section>
 
-    <!-- Stap 1: Template kiezen -->
-    <section class="card" id="step-template">
-      <div class="step-label">Stap 1 — Kies een template</div>
-      <div class="template-buttons">
-        <button class="template-btn" data-template="eerste">
-          <span class="template-icon">⚽</span>
-          <span class="template-name">Eerste Elftal</span>
-          <span class="template-desc">Seniorenteam</span>
-        </button>
-        <button class="template-btn" data-template="jeugd">
-          <span class="template-icon">🌱</span>
-          <span class="template-name">Jeugd</span>
-          <span class="template-desc">Alle jeugdteams</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- Stap 2: Foto maken (verborgen tot template is gekozen) -->
-    <section class="card" id="step-upload" hidden>
-      <div class="step-label">Stap 2 — Maak of kies een foto</div>
+    <!-- Stap 1: Foto maken -->
+    <section class="card" id="step-upload">
+      <div class="step-label">Stap 1 — Maak of kies een foto</div>
       <div class="camera-area">
         <label class="shutter-btn" for="photo-input">
           <span class="shutter-icon">📷</span>
@@ -61,11 +44,26 @@
       <input type="file" id="photo-input" accept="image/*" />
     </section>
 
-    <!-- Stap 3: Preview & verzenden -->
+    <!-- Stap 2: Preview, onderschrift & verzenden -->
     <section class="card" id="step-preview" hidden>
-      <div class="step-label">Stap 3 — Preview &amp; verzenden</div>
+      <div class="step-label">Stap 2 — Voeg tekst toe &amp; verzend</div>
+
       <div class="canvas-wrapper">
         <canvas id="canvas"></canvas>
+      </div>
+
+      <!-- Onderschrift invoer -->
+      <div class="caption-area">
+        <div class="caption-input-row">
+          <input
+            type="text"
+            id="caption-input"
+            class="caption-input"
+            placeholder="Voeg een onderschrift toe… (optioneel)"
+            maxlength="60"
+          />
+          <span id="caption-counter" class="caption-counter">0/60</span>
+        </div>
       </div>
 
       <div id="status-msg" class="status-msg" hidden></div>

@@ -155,9 +155,9 @@ function maakKaart(s) {
     </div>
     <div class="card-body">
       <div class="card-badges">
-        <span class="template-badge">${s.template_type}</span>
         <span class="status-badge ${statusInfo.cls}">${statusInfo.label}</span>
       </div>
+      ${s.caption ? `<p class="card-caption">"${s.caption}"</p>` : ''}
       <p class="card-date">📅 ${datum}</p>
       ${s.status === 'pending' ? `
         <div class="card-actions">

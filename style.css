@@ -123,62 +123,49 @@ main {
   margin-bottom: 1rem;
 }
 
-/* ----- Template knoppen ----- */
-.template-buttons {
-  display: flex;
-  gap: 0.75rem;
+/* ----- Onderschrift invoer ----- */
+.caption-area {
+  margin-top: 0.85rem;
 }
 
-.template-btn {
-  flex: 1;
+.caption-input-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
-  padding: 1.25rem 0.5rem 1.1rem;
-  min-height: 110px;
-  border: 2px solid #e5e5e5;
+  gap: 0.5rem;
   background: var(--white);
-  border-radius: 14px;
-  cursor: pointer;
-  color: var(--text);
-  transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s;
-  -webkit-tap-highlight-color: transparent;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 0 0.75rem;
+  transition: border-color 0.15s;
 }
 
-.template-btn:active {
-  transform: scale(0.96);
-  background: #f0f8c6;
+.caption-input-row:focus-within {
   border-color: var(--green);
 }
 
-.template-btn:hover { border-color: var(--green); }
-
-.template-btn.active {
-  background: var(--green);
-  border-color: var(--green);
-  color: var(--white);
-  box-shadow: 0 4px 14px rgba(162, 198, 38, 0.45);
-}
-
-.template-icon {
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.template-name {
+.caption-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0.75rem 0;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: -0.2px;
+  color: var(--text);
+  background: transparent;
 }
 
-.template-desc {
+.caption-input::placeholder { color: #bbb; }
+.caption-input:disabled     { opacity: 0.5; }
+
+.caption-counter {
   font-size: 0.72rem;
-  font-weight: 500;
-  opacity: 0.7;
+  font-weight: 600;
+  color: #bbb;
+  flex-shrink: 0;
+  transition: color 0.15s;
 }
 
-.template-btn.active .template-desc { opacity: 0.85; }
+.caption-counter--vol { color: #e07000; }
 
 /* ----- Camera area & shutter knop ----- */
 .camera-area {
@@ -625,6 +612,13 @@ main {
 .badge-pending  { background: #fff8e1; color: #b07d00; }
 .badge-approved { background: #eaf5d0; color: #3d6b00; }
 .badge-rejected { background: #fff0f0; color: #b00020; }
+
+.card-caption {
+  font-size: 0.82rem;
+  color: var(--text);
+  font-style: italic;
+  line-height: 1.4;
+}
 
 .card-date { font-size: 0.78rem; color: var(--muted); }
 

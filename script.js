@@ -96,8 +96,8 @@ function renderCanvas() {
   const dpr = Math.min(window.devicePixelRatio || 1, 3);
   canvas.width        = w * dpr;
   canvas.height       = h * dpr;
-  canvas.style.width  = w + 'px';
-  canvas.style.height = h + 'px';
+  canvas.style.width  = '100%';
+  canvas.style.height = 'auto';
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);  // teken alles in logische pixels
 
@@ -107,7 +107,7 @@ function renderCanvas() {
 }
 
 function tekenGradient(w, h) {
-  const gradH    = Math.round(h * 0.42);
+  const gradH    = Math.round(h * 0.28);
   const gradient = ctx.createLinearGradient(0, h - gradH, 0, h);
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0.62)');
@@ -121,7 +121,7 @@ function tekenTekst(w, h, caption) {
   const maxWidth  = w - padding * 2;
 
   // Font-groottes op basis van breedte (niet hoogte) — voorkomt overflow bij portretfotos
-  const brandSize   = Math.min(Math.round(w * 0.038), 36);
+  const brandSize   = Math.min(Math.round(w * 0.024), 22);
   const captionSize = Math.min(Math.round(w * 0.052), 48);
 
   // VV Zaamslag branding (altijd aanwezig, linksonder)

@@ -83,24 +83,26 @@ captionInput.addEventListener('input', () => {
 function renderCanvas() {
   const img   = loadedImage;
   const MAX_W = 1080;
+
+  // Logische afmetingen (onafhankelijk van DPR)
   let w = img.naturalWidth;
   let h = img.naturalHeight;
-
   if (w > MAX_W) {
     h = Math.round(h * MAX_W / w);
     w = MAX_W;
   }
 
-  canvas.width  = w;
-  canvas.height = h;
+  // Schaal canvas op met device pixel ratio voor scherpe tekst op retineschermen
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  canvas.width        = w * dpr;
+  canvas.height       = h * dpr;
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
 
-  // 1. Foto
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);  // teken alles in logische pixels
+
   ctx.drawImage(img, 0, 0, w, h);
-
-  // 2. Gradient onderaan
   tekenGradient(w, h);
-
-  // 3. Branding + onderschrift
   tekenTekst(w, h, captionInput.value.trim());
 }
 
@@ -109,49 +111,81 @@ function tekenGradient(w, h) {
   const gradient = ctx.createLinearGradient(0, h - gradH, 0, h);
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0.62)');
-
   ctx.fillStyle = gradient;
   ctx.fillRect(0, h - gradH, w, gradH);
 }
 
 function tekenTekst(w, h, caption) {
-  const padding    = w * 0.04;
-  const onderrand  = h - Math.round(h * 0.03);
+  const padding   = Math.round(w * 0.04);
+  const onderrand = h - Math.round(h * 0.03);
+  const maxWidth  = w - padding * 2;
 
-  // VV Zaamslag branding (altijd aanwezig)
-  const brandSize  = Math.round(h * 0.038);
+  // Font-groottes op basis van breedte (niet hoogte) — voorkomt overflow bij portretfotos
+  const brandSize   = Math.min(Math.round(w * 0.038), 36);
+  const captionSize = Math.min(Math.round(w * 0.052), 48);
+
+  // VV Zaamslag branding (altijd aanwezig, linksonder)
   ctx.save();
   ctx.fillStyle    = '#a2c626';
-  ctx.font         = `800 ${brandSize}px 'Inter', Arial, sans-serif`;
+  ctx.font         = `800 ${brandSize}px Inter, Arial, sans-serif`;
   ctx.textAlign    = 'left';
   ctx.textBaseline = 'bottom';
   ctx.fillText('VV ZAAMSLAG', padding, onderrand);
   ctx.restore();
 
-  // Onderschrift (optioneel)
   if (!caption) return;
 
-  const captionSize = Math.round(h * 0.058);
-  const captionY    = onderrand - brandSize - Math.round(h * 0.02);
-
+  // Caption: gesplitst over maximaal 2 regels, gecentreerd
   ctx.save();
+  ctx.font           = `700 ${captionSize}px Inter, Arial, sans-serif`;
   ctx.fillStyle      = '#ffffff';
-  ctx.font           = `700 ${captionSize}px 'Inter', Arial, sans-serif`;
   ctx.textAlign      = 'center';
   ctx.textBaseline   = 'bottom';
-  ctx.shadowColor    = 'rgba(0, 0, 0, 0.5)';
-  ctx.shadowBlur     = 10;
-  ctx.shadowOffsetY  = 2;
+  ctx.shadowColor    = 'rgba(0, 0, 0, 0.7)';
+  ctx.shadowBlur     = 4;
+  ctx.shadowOffsetY  = 1;
 
-  // Lange tekst afkappen met ellipsis als het niet past
-  const maxWidth = w - padding * 2;
-  const tekst    = kapTekstAf(ctx, caption, maxWidth);
-  ctx.fillText(tekst, w / 2, captionY);
+  const regels    = woordWrap(ctx, caption, maxWidth);
+  const regelH    = captionSize * 1.3;
+  const basisY    = onderrand - brandSize - Math.round(h * 0.025);
+
+  // Teken regels van onder naar boven
+  regels.reverse().forEach((regel, i) => {
+    ctx.fillText(regel, w / 2, basisY - i * regelH);
+  });
+
   ctx.restore();
 }
 
+// Splits tekst in maximaal 2 regels op woordgrenzen
+function woordWrap(context, tekst, maxWidth) {
+  const woorden = tekst.split(' ');
+  const regels  = [];
+  let huidig    = '';
+
+  for (const woord of woorden) {
+    const test = huidig ? huidig + ' ' + woord : woord;
+    if (context.measureText(test).width <= maxWidth) {
+      huidig = test;
+    } else {
+      if (huidig) regels.push(huidig);
+      huidig = woord;
+      if (regels.length >= 1) break; // max 2 regels
+    }
+  }
+
+  if (huidig) {
+    // Zorg dat de laatste regel past (anders afkappen)
+    if (context.measureText(huidig).width > maxWidth) {
+      huidig = kapTekstAf(context, huidig, maxWidth);
+    }
+    regels.push(huidig);
+  }
+
+  return regels;
+}
+
 function kapTekstAf(context, tekst, maxWidth) {
-  if (context.measureText(tekst).width <= maxWidth) return tekst;
   while (tekst.length > 0) {
     tekst = tekst.slice(0, -1);
     if (context.measureText(tekst + '…').width <= maxWidth) return tekst + '…';

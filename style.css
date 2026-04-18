@@ -656,30 +656,29 @@ main {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  border-radius: 4px;
-  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  backdrop-filter: blur(4px);
 }
-.badge-pending  { background: rgba(255,248,225,0.92); color: #b07d00; }
-.badge-approved { background: rgba(234,245,208,0.92); color: #3d6b00; }
-.badge-rejected { background: rgba(255,240,240,0.92); color: #b00020; }
+.badge-pending  { background: #fff8e1; color: #7a5500; }
+.badge-approved { background: #d4edaa; color: #2a5000; }
+.badge-rejected { background: #ffd6d6; color: #8b0000; }
 
 /* Datum — rechtsboven */
 .card-date-badge {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  font-size: 0.6rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
   color: #fff;
-  background: rgba(0,0,0,0.45);
-  border-radius: 4px;
-  padding: 0.2rem 0.4rem;
-  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.70);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  white-space: nowrap;
 }
 
 /* Actieknoppen — onderaan over de foto */

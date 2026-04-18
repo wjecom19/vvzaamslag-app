@@ -67,49 +67,56 @@ changePhotoBtn.addEventListener('click', () => {
 });
 
 // =========================================================
-// 2. Canvas tekenen: foto (1:1 Instagram) + gradient + branding
+// 2. Canvas tekenen: foto (9:16 Instagram Story) + gradient + branding
 // =========================================================
-function renderCanvas() {
-  const img  = loadedImage;
-  const SIZE = 1080;  // Instagram vierkant
+const W = 1080;
+const H = 1920;
 
+function renderCanvas() {
+  const img = loadedImage;
   const dpr = Math.min(window.devicePixelRatio || 1, 3);
-  canvas.width        = SIZE * dpr;
-  canvas.height       = SIZE * dpr;
+
+  canvas.width        = W * dpr;
+  canvas.height       = H * dpr;
   canvas.style.width  = '100%';
   canvas.style.height = 'auto';
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  // Middenbijsnijden naar vierkant
-  const src = Math.min(img.naturalWidth, img.naturalHeight);
-  const sx  = (img.naturalWidth  - src) / 2;
-  const sy  = (img.naturalHeight - src) / 2;
-  ctx.drawImage(img, sx, sy, src, src, 0, 0, SIZE, SIZE);
+  // Foto bijsnijden zodat hij het 9:16 canvas volledig vult (center-crop)
+  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const sw    = W / scale;
+  const sh    = H / scale;
+  const sx    = (img.naturalWidth  - sw) / 2;
+  const sy    = (img.naturalHeight - sh) / 2;
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
 
-  tekenGradient(SIZE);
-  tekenBranding(SIZE);
+  tekenGradient();
+  tekenBranding();
 }
 
-function tekenGradient(size) {
-  const gradH    = Math.round(size * 0.28);
-  const gradient = ctx.createLinearGradient(0, size - gradH, 0, size);
+function tekenGradient() {
+  const gradH    = Math.round(H * 0.25);
+  const gradient = ctx.createLinearGradient(0, H - gradH, 0, H);
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.62)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.50)');
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, size - gradH, size, gradH);
+  ctx.fillRect(0, H - gradH, W, gradH);
 }
 
-function tekenBranding(size) {
-  const padding   = Math.round(size * 0.04);
-  const onderrand = size - Math.round(size * 0.03);
-  const fontSize  = Math.min(Math.round(size * 0.024), 22);
+function tekenBranding() {
+  const padding   = Math.round(W * 0.05);
+  const onderrand = H - Math.round(H * 0.025);
+  const fontSize  = Math.round(W * 0.055);  // ~60px op 1080px breed
 
   ctx.save();
   ctx.fillStyle    = '#a2c626';
   ctx.font         = `800 ${fontSize}px Inter, Arial, sans-serif`;
   ctx.textAlign    = 'left';
   ctx.textBaseline = 'bottom';
+  ctx.shadowColor  = 'rgba(0, 0, 0, 0.4)';
+  ctx.shadowBlur   = 6;
+  ctx.shadowOffsetY = 2;
   ctx.fillText('VV ZAAMSLAG', padding, onderrand);
   ctx.restore();
 }

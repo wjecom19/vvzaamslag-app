@@ -652,10 +652,17 @@ main {
 }
 
 /* Status badge — linksboven op de foto */
-.card-status-badge {
+.card-meta {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+.card-status-badge {
   font-size: 0.75rem;
   font-weight: 800;
   border-radius: 6px;
@@ -667,11 +674,7 @@ main {
 .badge-approved { background: #d4edaa; color: #2a5000; }
 .badge-rejected { background: #ffd6d6; color: #8b0000; }
 
-/* Datum — rechtsboven */
 .card-date-badge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
   font-size: 0.7rem;
   font-weight: 700;
   color: #fff;

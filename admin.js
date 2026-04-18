@@ -187,8 +187,10 @@ function maakKaart(s) {
   kaart.innerHTML = `
     <div class="card-image">
       <img src="${s.image_url}" alt="Inzending foto" loading="lazy" />
-      <span class="card-status-badge ${statusInfo.cls}">${statusInfo.label}</span>
-      <span class="card-date-badge">${datum}</span>
+      <div class="card-meta">
+        <span class="card-status-badge ${statusInfo.cls}">${statusInfo.label}</span>
+        <span class="card-date-badge">${datum}</span>
+      </div>
       ${s.status === 'pending' ? `
         <div class="card-actions-overlay">
           <button class="btn-approve" data-id="${s.id}">✓ Goedkeuren</button>

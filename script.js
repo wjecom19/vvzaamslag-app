@@ -104,8 +104,8 @@ function renderCanvas() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.drawImage(img, panX, panY, sw, sh, 0, 0, W, H);
 
-  tekenGradient();
-  tekenBranding();
+  tekenGradient(ctx, W, H);
+  tekenBranding(ctx, W, H);
 }
 
 // =========================================================
@@ -153,30 +153,30 @@ function onDrag(e) {
   renderCanvas();
 }
 
-function tekenGradient() {
-  const gradH    = Math.round(H * 0.25);
-  const gradient = ctx.createLinearGradient(0, H - gradH, 0, H);
+function tekenGradient(c, w, h) {
+  const gradH    = Math.round(h * 0.25);
+  const gradient = c.createLinearGradient(0, h - gradH, 0, h);
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0.50)');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, H - gradH, W, gradH);
+  c.fillStyle = gradient;
+  c.fillRect(0, h - gradH, w, gradH);
 }
 
-function tekenBranding() {
-  const padding   = Math.round(W * 0.05);
-  const onderrand = H - Math.round(H * 0.025);
-  const fontSize  = Math.round(W * 0.038);  // ~41px op 1080px breed
+function tekenBranding(c, w, h) {
+  const padding    = Math.round(w * 0.05);
+  const onderrand  = h - Math.round(h * 0.025);
+  const fontSize   = Math.round(w * 0.038);
 
-  ctx.save();
-  ctx.fillStyle    = '#a2c626';
-  ctx.font         = `800 ${fontSize}px Inter, Arial, sans-serif`;
-  ctx.textAlign    = 'left';
-  ctx.textBaseline = 'bottom';
-  ctx.shadowColor  = 'rgba(0, 0, 0, 0.4)';
-  ctx.shadowBlur   = 6;
-  ctx.shadowOffsetY = 2;
-  ctx.fillText('VV ZAAMSLAG', padding, onderrand);
-  ctx.restore();
+  c.save();
+  c.fillStyle     = '#a2c626';
+  c.font          = `800 ${fontSize}px Inter, Arial, sans-serif`;
+  c.textAlign     = 'left';
+  c.textBaseline  = 'bottom';
+  c.shadowColor   = 'rgba(0, 0, 0, 0.4)';
+  c.shadowBlur    = 6;
+  c.shadowOffsetY = 2;
+  c.fillText('VV ZAAMSLAG', padding, onderrand);
+  c.restore();
 }
 
 
@@ -293,10 +293,25 @@ function triggerFlash() {
 }
 
 function canvasNaarBlob() {
+  // Aparte exportcanvas op exacte Story-resolutie — geen DPR-schaling, maximale kwaliteit
+  const exp    = document.createElement('canvas');
+  exp.width    = W;
+  exp.height   = H;
+  const ec     = exp.getContext('2d');
+
+  const img    = loadedImage;
+  const scale  = berekenSchaal(img);
+  const sw     = W / scale;
+  const sh     = H / scale;
+
+  ec.drawImage(img, panX, panY, sw, sh, 0, 0, W, H);
+  tekenGradient(ec, W, H);
+  tekenBranding(ec, W, H);
+
   return new Promise((resolve, reject) => {
-    canvas.toBlob(blob => {
+    exp.toBlob(blob => {
       if (blob) resolve(blob);
-      else reject(new Error('Canvas kon niet naar afbeelding worden geconverteerd.'));
-    }, 'image/jpeg', 0.85);
+      else reject(new Error('Canvas kon niet worden geconverteerd.'));
+    }, 'image/jpeg', 0.95);   // 95% kwaliteit i.p.v. 85%
   });
 }

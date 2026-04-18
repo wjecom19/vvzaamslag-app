@@ -197,7 +197,7 @@ main {
   box-shadow: 0 2px 10px rgba(162, 198, 38, 0.25);
 }
 
-.shutter-icon { font-size: 2rem; line-height: 1; }
+.shutter-icon { width: 2rem; height: 2rem; color: var(--green); display: block; }
 
 .camera-hint {
   font-size: 0.82rem;

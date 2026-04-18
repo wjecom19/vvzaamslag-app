@@ -175,10 +175,8 @@ function maakKaart(s) {
   kaart.className = 'submission-card';
   kaart.dataset.id = s.id;
 
-  const datum = new Date(s.created_at).toLocaleString('nl-NL', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  });
+  const d     = new Date(s.created_at);
+  const datum = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getFullYear()).slice(2)}`;
 
   const statusInfo = {
     pending:     { label: 'In behandeling', cls: 'badge-pending'    },

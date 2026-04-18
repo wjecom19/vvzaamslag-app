@@ -37,12 +37,15 @@ const refreshBtn      = document.getElementById('refresh-btn');
 const retryBtn        = document.getElementById('retry-btn');
 const downloadZipBtn  = document.getElementById('download-zip-btn');
 const filterBtns      = document.querySelectorAll('.filter-btn');
+const pagination      = document.getElementById('pagination');
 
 // =========================================================
 // Staat
 // =========================================================
 let allSubmissions = [];
 let activeFilter   = 'all';
+let huidigePagina  = 1;
+const PER_PAGINA   = 6;
 
 // =========================================================
 // Login
@@ -79,7 +82,8 @@ filterBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     filterBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    activeFilter = btn.dataset.filter;
+    activeFilter  = btn.dataset.filter;
+    huidigePagina = 1;
     renderGrid();
   });
 });
@@ -121,6 +125,7 @@ function renderGrid() {
     : allSubmissions.filter(s => s.status === activeFilter);
 
   submissionsGrid.innerHTML = '';
+  pagination.innerHTML = '';
 
   if (zichtbaar.length === 0) {
     toonStaat('empty');
@@ -128,9 +133,41 @@ function renderGrid() {
     return;
   }
 
+  const aantalPaginas = Math.ceil(zichtbaar.length / PER_PAGINA);
+  huidigePagina = Math.min(huidigePagina, aantalPaginas);
+
+  const start = (huidigePagina - 1) * PER_PAGINA;
+  const pagina = zichtbaar.slice(start, start + PER_PAGINA);
+
   toonStaat('grid');
-  resultCount.textContent = `${zichtbaar.length} inzending${zichtbaar.length !== 1 ? 'en' : ''}`;
-  zichtbaar.forEach(s => submissionsGrid.appendChild(maakKaart(s)));
+  resultCount.textContent =
+    `${zichtbaar.length} inzending${zichtbaar.length !== 1 ? 'en' : ''} — pagina ${huidigePagina} van ${aantalPaginas}`;
+
+  pagina.forEach(s => submissionsGrid.appendChild(maakKaart(s)));
+
+  // Paginering renderen
+  if (aantalPaginas > 1) {
+    const prev = maakPaginaKnop('← Vorige', huidigePagina > 1, () => { huidigePagina--; renderGrid(); window.scrollTo(0,0); });
+    pagination.appendChild(prev);
+
+    for (let i = 1; i <= aantalPaginas; i++) {
+      const btn = maakPaginaKnop(i, true, () => { huidigePagina = i; renderGrid(); window.scrollTo(0,0); });
+      if (i === huidigePagina) btn.classList.add('active');
+      pagination.appendChild(btn);
+    }
+
+    const next = maakPaginaKnop('Volgende →', huidigePagina < aantalPaginas, () => { huidigePagina++; renderGrid(); window.scrollTo(0,0); });
+    pagination.appendChild(next);
+  }
+}
+
+function maakPaginaKnop(label, enabled, onClick) {
+  const btn = document.createElement('button');
+  btn.className   = 'pagina-btn';
+  btn.textContent = label;
+  btn.disabled    = !enabled;
+  btn.addEventListener('click', onClick);
+  return btn;
 }
 
 function maakKaart(s) {

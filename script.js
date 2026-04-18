@@ -26,6 +26,7 @@ const canvas         = document.getElementById('canvas');
 const ctx            = canvas.getContext('2d');
 const stepPreview    = document.getElementById('step-preview');
 
+const deelBtn        = document.getElementById('deel-btn');
 const verzendBtn     = document.getElementById('verzend-btn');
 const verzendLabel   = document.getElementById('verzend-label');
 const btnSpinner     = document.getElementById('btn-spinner');
@@ -180,7 +181,28 @@ function tekenBranding() {
 
 
 // =========================================================
-// 4. Verzenden naar Supabase
+// 4. Direct opslaan / delen (naar Instagram etc.)
+// =========================================================
+deelBtn.addEventListener('click', async () => {
+  if (!loadedImage) return;
+  const blob    = await canvasNaarBlob();
+  const bestand = new File([blob], 'vv-zaamslag.jpg', { type: 'image/jpeg' });
+
+  if (navigator.canShare && navigator.canShare({ files: [bestand] })) {
+    await navigator.share({ files: [bestand] });
+  } else {
+    // Fallback: download
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href     = url;
+    link.download = 'vv-zaamslag.jpg';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+});
+
+// =========================================================
+// 5. Verzenden naar Supabase
 // =========================================================
 verzendBtn.addEventListener('click', verzendFoto);
 

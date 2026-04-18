@@ -249,6 +249,28 @@ main {
   margin-top: 0.85rem;
 }
 
+.btn-share-direct {
+  flex: 1;
+  min-height: 50px;
+  padding: 0 1rem;
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: var(--white);
+  color: var(--green-dark);
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-share-direct:hover  { background: var(--green-light); }
+.btn-share-direct:active { transform: scale(0.96); }
+
 .btn-primary,
 .btn-secondary {
   flex: 1;

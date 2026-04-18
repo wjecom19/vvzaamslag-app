@@ -279,13 +279,9 @@ async function deelFoto(id, imageUrl, templateType) {
     const response = await fetch(imageUrl);
     if (!response.ok) throw new Error('Afbeelding kon niet worden opgehaald.');
     const blob = await response.blob();
-    const bestand = new File([blob], `vv-zaamslag-${templateType.toLowerCase().replace(' ', '-')}.png`, {
-      type: 'image/png',
-    });
+    const bestand = new File([blob], 'vv-zaamslag.jpg', { type: 'image/jpeg' });
 
     const deelData = {
-      title: `VV Zaamslag – ${templateType}`,
-      text:  '⚽ Bekijk deze foto van VV Zaamslag! #VVZaamslag',
       files: [bestand],
     };
 

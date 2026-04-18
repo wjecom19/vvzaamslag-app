@@ -207,7 +207,7 @@ function maakKaart(s) {
 
   kaart.querySelector('.btn-approve')?.addEventListener('click', () => pasStatusAan(s.id, 'goedgekeurd'));
   kaart.querySelector('.btn-reject')?.addEventListener('click',  () => pasStatusAan(s.id, 'afgewezen'));
-  kaart.querySelector('.btn-share')?.addEventListener('click',   () => deelFoto(s.id, s.image_url, s.template_type));
+  kaart.querySelector('.btn-share')?.addEventListener('click',   () => deelFoto(s.id, s.image_url));
 
   return kaart;
 }
@@ -266,8 +266,7 @@ async function downloadAllesFotos() {
       const response = await fetch(foto.image_url);
       if (!response.ok) throw new Error('Niet bereikbaar');
       const blob     = await response.blob();
-      const ext      = blob.type.includes('png') ? 'png' : 'jpg';
-      const naam     = `${foto.template_type.replace(/\s+/g, '-').toLowerCase()}-${i + 1}.${ext}`;
+      const naam     = `vvzaamslag-foto-${i + 1}.jpg`;
       zip.file(naam, blob);
       geslaagd++;
     } catch (err) {
@@ -295,7 +294,7 @@ async function downloadAllesFotos() {
 // =========================================================
 // Foto delen via Web Share API
 // =========================================================
-async function deelFoto(id, imageUrl, templateType) {
+async function deelFoto(id, imageUrl) {
   const kaart  = document.querySelector(`[data-id="${id}"]`);
   const btn    = kaart?.querySelector('.btn-share');
 

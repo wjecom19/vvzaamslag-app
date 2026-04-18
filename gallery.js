@@ -123,28 +123,20 @@ function startSlideshowModus() {
 // GALERIJ
 // =========================================================
 function startGalerijModus() {
-  const loadingState = document.getElementById('loading-state');
-  const emptyState   = document.getElementById('empty-state');
-  const errorState   = document.getElementById('error-state');
-  const errorText    = document.getElementById('error-text');
-  const galleryGrid  = document.getElementById('gallery-grid');
-  const galleryCta   = document.getElementById('gallery-cta');
-  const resultCount  = document.getElementById('result-count');
-  const retryBtn     = document.getElementById('retry-btn');
-  const refreshBtn   = document.getElementById('refresh-btn');
-  const filterBtns   = document.querySelectorAll('.filter-btn');
+  const loadingState  = document.getElementById('loading-state');
+  const emptyState    = document.getElementById('empty-state');
+  const errorState    = document.getElementById('error-state');
+  const errorText     = document.getElementById('error-text');
+  const galleryGrid   = document.getElementById('gallery-grid');
+  const galleryCta    = document.getElementById('gallery-cta');
+  const resultCount   = document.getElementById('result-count');
+  const retryBtn      = document.getElementById('retry-btn');
+  const refreshBtn    = document.getElementById('refresh-btn');
+  const paginationEl  = document.getElementById('gallery-pagination');
 
+  const PER_PAGINA = 9;
   let allFotos     = [];
-  let activeFilter = 'all';
-
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeFilter = btn.dataset.filter;
-      renderGrid();
-    });
-  });
+  let huidigePagina = 1;
 
   refreshBtn.addEventListener('click', laadFotos);
   retryBtn.addEventListener('click', laadFotos);
@@ -156,12 +148,13 @@ function startGalerijModus() {
     try {
       const { data, error } = await supabaseClient
         .from('inzendingen')
-        .select('id, image_url, template_type, created_at')
+        .select('id, image_url, created_at')
         .eq('status', 'goedgekeurd')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       allFotos = data ?? [];
+      huidigePagina = 1;
       renderGrid();
     } catch (err) {
       errorText.textContent = `Laden mislukt: ${err.message}`;
@@ -170,35 +163,62 @@ function startGalerijModus() {
   }
 
   function renderGrid() {
-    const zichtbaar = activeFilter === 'all'
-      ? allFotos
-      : allFotos.filter(f => f.template_type === activeFilter);
+    galleryGrid.innerHTML  = '';
+    paginationEl.innerHTML = '';
 
-    galleryGrid.innerHTML = '';
-
-    if (zichtbaar.length === 0) {
+    if (allFotos.length === 0) {
       toonStaat('empty');
       resultCount.textContent = '';
       return;
     }
 
+    const aantalPaginas = Math.ceil(allFotos.length / PER_PAGINA);
+    huidigePagina = Math.min(huidigePagina, aantalPaginas);
+    const start   = (huidigePagina - 1) * PER_PAGINA;
+    const pagina  = allFotos.slice(start, start + PER_PAGINA);
+
     toonStaat('grid');
-    resultCount.textContent = `${zichtbaar.length} foto${zichtbaar.length !== 1 ? "'s" : ''}`;
-    zichtbaar.forEach(foto => galleryGrid.appendChild(maakKaart(foto)));
+    resultCount.textContent =
+      `${allFotos.length} foto${allFotos.length !== 1 ? "'s" : ''} — pagina ${huidigePagina} van ${aantalPaginas}`;
+
+    pagina.forEach(foto => galleryGrid.appendChild(maakKaart(foto)));
+
+    if (aantalPaginas > 1) {
+      const prev = maakPaginaKnop('← Vorige', huidigePagina > 1, () => { huidigePagina--; renderGrid(); window.scrollTo(0,0); });
+      paginationEl.appendChild(prev);
+
+      for (let i = 1; i <= aantalPaginas; i++) {
+        const btn = maakPaginaKnop(i, true, () => { huidigePagina = i; renderGrid(); window.scrollTo(0,0); });
+        if (i === huidigePagina) btn.classList.add('active');
+        paginationEl.appendChild(btn);
+      }
+
+      const next = maakPaginaKnop('Volgende →', huidigePagina < aantalPaginas, () => { huidigePagina++; renderGrid(); window.scrollTo(0,0); });
+      paginationEl.appendChild(next);
+    }
+  }
+
+  function maakPaginaKnop(label, enabled, onClick) {
+    const btn = document.createElement('button');
+    btn.className   = 'pagina-btn';
+    btn.textContent = label;
+    btn.disabled    = !enabled;
+    btn.addEventListener('click', onClick);
+    return btn;
   }
 
   function maakKaart(foto) {
-    const kaart      = document.createElement('a');
-    kaart.className  = 'gallery-card';
-    kaart.href       = foto.image_url;
-    kaart.target     = '_blank';
-    kaart.rel        = 'noopener noreferrer';
-    kaart.innerHTML  = `
+    const d      = new Date(foto.created_at);
+    const datum  = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getFullYear()).slice(2)}`;
+    const kaart  = document.createElement('a');
+    kaart.className = 'gallery-card';
+    kaart.href      = foto.image_url;
+    kaart.target    = '_blank';
+    kaart.rel       = 'noopener noreferrer';
+    kaart.innerHTML = `
       <div class="gallery-card-img">
-        <img src="${foto.image_url}" alt="${foto.template_type}" loading="lazy" />
-      </div>
-      <div class="gallery-card-footer">
-        <span class="template-badge">${foto.template_type}</span>
+        <img src="${foto.image_url}" alt="VV Zaamslag foto" loading="lazy" />
+        <span class="gallery-date-badge">${datum}</span>
       </div>
     `;
     return kaart;
@@ -210,5 +230,6 @@ function startGalerijModus() {
     errorState.hidden   = staat !== 'error';
     galleryGrid.hidden  = staat !== 'grid';
     galleryCta.hidden   = staat !== 'grid';
+    paginationEl.hidden = staat !== 'grid';
   }
 }

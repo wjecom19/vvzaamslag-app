@@ -488,7 +488,7 @@ main {
 
 /* Toolbar boven het grid */
 .admin-toolbar {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 1.25rem auto 0;
   padding: 0 1rem;
   display: flex;
@@ -556,7 +556,7 @@ main {
 .btn-gallery:hover { border-color: var(--green); }
 
 .result-count {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0.5rem auto 0;
   padding: 0 1rem;
   font-size: 0.78rem;
@@ -566,7 +566,7 @@ main {
 
 /* Terugkoppeling: laden / leeg / fout */
 .feedback-state {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 3rem auto;
   padding: 0 1rem;
   text-align: center;
@@ -591,11 +591,11 @@ main {
 
 /* Inzendingen grid */
 .submissions-grid {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0.75rem auto 2rem;
   padding: 0 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
 }
 
@@ -617,7 +617,7 @@ main {
 .card-image { line-height: 0; background: #000; }
 .card-image img {
   width: 100%;
-  aspect-ratio: 4/3;
+  aspect-ratio: 9/16;
   object-fit: cover;
   display: block;
 }
@@ -723,7 +723,7 @@ main {
    ========================================================= */
 
 .gallery-grid {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0.75rem auto 0;
   padding: 0 1rem;
   display: grid;
@@ -765,7 +765,7 @@ main {
 
 /* CTA onderaan galerij */
 .gallery-cta {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 1.5rem auto 2.5rem;
   padding: 0 1rem;
   display: flex;

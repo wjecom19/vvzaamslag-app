@@ -37,6 +37,9 @@ const flashOverlay   = document.getElementById('flash-overlay');
 // Staat
 // =========================================================
 let loadedImage = null;
+let panX = 0, panY = 0;          // verschuiving in bronafbeelding-pixels
+let isDragging = false;
+let lastX = 0, lastY = 0;
 
 // =========================================================
 // 1. Foto inladen
@@ -50,6 +53,7 @@ photoInput.addEventListener('change', e => {
     const img = new Image();
     img.onload = () => {
       loadedImage = img;
+      initPan();
       triggerFlash();
       renderCanvas();
       verbergStatus();
@@ -72,9 +76,24 @@ changePhotoBtn.addEventListener('click', () => {
 const W = 1080;
 const H = 1920;
 
+function berekenSchaal(img) {
+  return Math.max(W / img.naturalWidth, H / img.naturalHeight);
+}
+
+function initPan() {
+  const scale = berekenSchaal(loadedImage);
+  const sw = W / scale;
+  const sh = H / scale;
+  panX = (loadedImage.naturalWidth  - sw) / 2;
+  panY = (loadedImage.naturalHeight - sh) / 2;
+}
+
 function renderCanvas() {
-  const img = loadedImage;
-  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const img   = loadedImage;
+  const dpr   = Math.min(window.devicePixelRatio || 1, 3);
+  const scale = berekenSchaal(img);
+  const sw    = W / scale;
+  const sh    = H / scale;
 
   canvas.width        = W * dpr;
   canvas.height       = H * dpr;
@@ -82,17 +101,55 @@ function renderCanvas() {
   canvas.style.height = 'auto';
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  // Foto bijsnijden zodat hij het 9:16 canvas volledig vult (center-crop)
-  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
-  const sw    = W / scale;
-  const sh    = H / scale;
-  const sx    = (img.naturalWidth  - sw) / 2;
-  const sy    = (img.naturalHeight - sh) / 2;
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+  ctx.drawImage(img, panX, panY, sw, sh, 0, 0, W, H);
 
   tekenGradient();
   tekenBranding();
+}
+
+// =========================================================
+// 3. Slepen om bijsnijpositie te kiezen
+// =========================================================
+function getEventPos(e) {
+  return e.touches
+    ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    : { x: e.clientX, y: e.clientY };
+}
+
+canvas.addEventListener('mousedown',  e => { isDragging = true; const p = getEventPos(e); lastX = p.x; lastY = p.y; });
+canvas.addEventListener('touchstart', e => { isDragging = true; const p = getEventPos(e); lastX = p.x; lastY = p.y; }, { passive: true });
+
+canvas.addEventListener('mousemove',  onDrag);
+canvas.addEventListener('touchmove',  onDrag, { passive: false });
+
+canvas.addEventListener('mouseup',    () => isDragging = false);
+canvas.addEventListener('mouseleave', () => isDragging = false);
+canvas.addEventListener('touchend',   () => isDragging = false);
+
+function onDrag(e) {
+  if (!isDragging || !loadedImage) return;
+  if (e.cancelable) e.preventDefault();
+
+  const pos = getEventPos(e);
+  const dx  = pos.x - lastX;
+  const dy  = pos.y - lastY;
+  lastX = pos.x;
+  lastY = pos.y;
+
+  const scale = berekenSchaal(loadedImage);
+  const sw    = W / scale;
+  const sh    = H / scale;
+  const rect  = canvas.getBoundingClientRect();
+
+  // CSS-pixels omzetten naar bronafbeelding-pixels
+  panX -= dx * sw / rect.width;
+  panY -= dy * sh / rect.height;
+
+  // Niet buiten de afbeelding schuiven
+  panX = Math.max(0, Math.min(loadedImage.naturalWidth  - sw, panX));
+  panY = Math.max(0, Math.min(loadedImage.naturalHeight - sh, panY));
+
+  renderCanvas();
 }
 
 function tekenGradient() {
@@ -107,7 +164,7 @@ function tekenGradient() {
 function tekenBranding() {
   const padding   = Math.round(W * 0.05);
   const onderrand = H - Math.round(H * 0.025);
-  const fontSize  = Math.round(W * 0.055);  // ~60px op 1080px breed
+  const fontSize  = Math.round(W * 0.038);  // ~41px op 1080px breed
 
   ctx.save();
   ctx.fillStyle    = '#a2c626';

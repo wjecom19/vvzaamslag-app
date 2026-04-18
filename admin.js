@@ -152,24 +152,17 @@ function maakKaart(s) {
   kaart.innerHTML = `
     <div class="card-image">
       <img src="${s.image_url}" alt="Inzending foto" loading="lazy" />
-    </div>
-    <div class="card-body">
-      <div class="card-badges">
-        <span class="status-badge ${statusInfo.cls}">${statusInfo.label}</span>
-      </div>
-      ${s.caption ? `<p class="card-caption">"${s.caption}"</p>` : ''}
-      <p class="card-date">📅 ${datum}</p>
+      <span class="card-status-badge ${statusInfo.cls}">${statusInfo.label}</span>
+      <span class="card-date-badge">${datum}</span>
       ${s.status === 'pending' ? `
-        <div class="card-actions">
+        <div class="card-actions-overlay">
           <button class="btn-approve" data-id="${s.id}">✓ Goedkeuren</button>
           <button class="btn-reject"  data-id="${s.id}">✕ Afwijzen</button>
         </div>
       ` : ''}
       ${s.status === 'goedgekeurd' ? `
-        <div class="card-actions">
-          <button class="btn-share" data-id="${s.id}" data-url="${s.image_url}" data-type="${s.template_type}">
-            ↑ Delen
-          </button>
+        <div class="card-actions-overlay">
+          <button class="btn-share" data-id="${s.id}" data-url="${s.image_url}">↑ Delen</button>
         </div>
       ` : ''}
     </div>
